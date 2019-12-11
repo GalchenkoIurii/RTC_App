@@ -28,7 +28,47 @@ async function start() {
 };
 
 async function call() {
-    console.log('Calling')
+    // Set buttons state
+    callButton.disabled = true;
+    hangupButton.disabled = false;
+    console.log('Starting call');
+    // Getting and show info about media-streams
+    const videoTracks = localStream.getVideoTracks();
+    const audioTracks = localStream.getAudioTracks();
+    if (videoTracks.length > 0) {
+        console.log(`Using video device: ${videoTracks[0].label}`);
+    }
+    if (audioTracks.length > 0) {
+        console.log(`Using audio device: ${audioTracks[0].label}`);
+    }
+
+    // Creating RTCPeerConnection objects with empty configuration
+    const configuration = {};
+    console.log('RTCPeerConnection configuration:', configuration);
+    pc1 = new RTCPeerConnection(configuration);
+    console.log('Created local peer connection object pc1');
+    pc2 = new RTCPeerConnection(configuration);
+    console.log('Created remote peer connection object pc2');
+
+    // Adding ICE-candidate event handlers
+    pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+    pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+
+    // Second connection stream adding handler
+    pc2.addEventListener('track', gotRemoteStream);
+
+    // Getting streams from current stream-object and put it in RTCPeerConnection object
+    localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
+    console.log(localStream.getTracks());
+
+    // Creating offer from pc1
+    try {
+        console.log('pc1 createOffer start');
+        const offer = await pc1.createOffer(offerOptions);
+        await onCreateOfferSuccess(offer);
+    } catch (e) {
+        console.log(`${e}`);
+    }
 };
 
 async function stop() {
