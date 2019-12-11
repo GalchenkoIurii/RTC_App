@@ -35,3 +35,28 @@ remoteVideo.addEventListener('loadedmetadata', function() {
     console.log(`Remote video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
 });
 
+
+//--------------------------------------
+
+
+let localStream;
+let pc1;
+let pc2;
+const offerOptions = {
+    offerToReceiveAudio: 1,
+    offerToReceiveVideo: 1
+};
+
+function getName(pc) {
+    return (pc === pc1) ? 'pc1' : 'pc2';
+}
+
+function getOtherPc(pc) {
+    return (pc === pc1) ? pc2 : pc1;
+}
+
+
+//-------------------------------------------
+
+
+
