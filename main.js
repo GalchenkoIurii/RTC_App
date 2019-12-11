@@ -14,6 +14,17 @@ const remoteVideo = document.getElementById('remoteVideo');
 
 async function start() {
     console.log('Start')
+    console.log('Requesting local stream');
+    startButton.disabled = true;
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+        console.log('Received local stream');
+        localVideo.srcObject = stream;
+        localStream = stream;
+        callButton.disabled = false;
+    } catch (e) {
+        alert(`getUserMedia() error: ${e.name}`);
+    }
 };
 
 async function call() {
